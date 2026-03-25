@@ -20,12 +20,17 @@ PinBoard es un sistema distribuido construido con arquitectura de microservicios
 
 ---
 
-## Arquitectura
+## Arquitectura General del sistema
 
 ![alt text](Arquitectura.svg)
 
 ---
 
+## Arquitectura backend
+
+![alt text](<Diagrama Backend.svg>)
+
+---
 ## Tecnologías
 
 | Tecnología | Uso |
