@@ -151,6 +151,7 @@ services:
   microservicio_5_replica:
     <<: *micro5_base # Copia toda la configuración de arriba
     container_name: microservicio_5_replica
+  # --- CONFIGURACIÓN DEL API GATEWAY ---
   nginx:
     image: nginx
     ports:
