@@ -1,0 +1,160 @@
+service:
+# ---- PRIMEROS TRES CONTENEDORES DE MONGO EN EL PRIMER REPLICA SET (ARCHIVO KEYFILE_1) ----
+# PRIMER SERVICIO DE MONGO
+  mongo1:
+    image: mongo
+    container_name: mongo1
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 425269
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
+    volumes:
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./mongo_1:/data/db
+    ports:
+      - "27017:27017"
+
+
+# SEGUNDO SERVICIO DE MONGO
+  mongo2:
+    image: mongo
+    container_name: mongo2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 425269
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
+    volumes:
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./mongo_2:/data/db
+    ports:
+      - "27018:27017"
+
+
+# TERCER SERVICIO DE MONGO
+  mongo3:
+    image: mongo
+    container_name: mongo3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 425269
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
+    volumes:
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./mongo_3:/data/db
+    ports:
+      - "27019:27017"
+
+  
+  # --- MICROSERVICIO 1 Y SU RÉPLICA ---
+
+  # Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
+  microservicio_1: &micro1_base
+    image: node:18
+    container_name: microservicio_1
+    working_dir: /app
+    volumes:
+      - ./microservicio_1:/app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    expose:
+      - "3000"
+
+  # --- RÉPLICA DEL MICROSERVICIO 1 ---
+  microservicio_1_replica:
+      <<: *micro1_base # Copia toda la configuración de arriba
+      container_name: microservicio_1_replica
+
+
+  # --- MICROSERVICIO 2 Y SU RÉPLICA ---
+
+  # Declaración del microservicio 2 tal cual como lo pusimos en nginx.conf
+  microservicio_2: &micro2_base
+    image: node:18
+    container_name: microservicio_2
+    working_dir: /app
+    volumes:
+      - ./microservicio_2:/app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    expose:
+      - "3000"
+
+  # --- RÉPLICA DEL MICROSERVICIO 2 ---
+  microservicio_2_replica:
+      <<: *micro2_base # Copia toda la configuración de arriba
+      container_name: microservicio_2_replica
+
+
+  # --- MICROSERVICIO 3 Y SU RÉPLICA ---
+
+  # Declaración del microservicio 2 tal cual como lo pusimos en nginx.conf
+  microservicio_3: &micro3_base
+    image: node:18
+    container_name: microservicio_3
+    working_dir: /app
+    volumes:
+      - ./microservicio_3:/app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    expose:
+      - "3000"
+
+  # --- RÉPLICA DEL MICROSERVICIO 3 ---
+  microservicio_3_replica:
+      <<: *micro3_base # Copia toda la configuración de arriba
+      container_name: microservicio_3_replica
+
+
+  # --- MICROSERVICIO 4 Y SU RÉPLICA ---
+
+  # Declaración del microservicio 4 tal cual como lo pusimos en nginx.conf
+  microservicio_4: &micro4_base
+    image: node:18
+    container_name: microservicio_4
+    working_dir: /app
+    volumes:
+      - ./microservicio_4:/app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    expose:
+      - "3000"
+
+  # --- RÉPLICA DEL MICROSERVICIO 4 ---
+  microservicio_4_replica:
+      <<: *micro4_base # Copia toda la configuración de arriba
+      container_name: microservicio_4_replica
+
+
+  # --- MICROSERVICIO 5 Y SU RÉPLICA ---
+
+  # Declaración del microservicio 5 tal cual como lo pusimos en nginx.conf
+  microservicio_5: &micro5_base
+    image: node:18
+    container_name: microservicio_5
+    working_dir: /app
+    volumes:
+      - ./microservicio_5:/app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    expose:
+      - "3000"
+
+  # --- RÉPLICA DEL MICROSERVICIO 5 ---
+  microservicio_5_replica:
+      <<: *micro5_base # Copia toda la configuración de arriba
+      container_name: microservicio_5_replica
