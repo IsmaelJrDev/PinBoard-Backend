@@ -5,22 +5,21 @@ services:
     image: mongo
     container_name: mongo1
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 425269
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
     volumes:
       - ./mongo-keyfile:/etc/mongo-keyfile
       - ./mongo_1:/data/db
     ports:
       - "27017:27017"
-
   # SEGUNDO SERVICIO DE MONGO
   mongo2:
     image: mongo
     container_name: mongo2
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 425269
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
     volumes:
       - ./mongo-keyfile:/etc/mongo-keyfile
@@ -33,8 +32,8 @@ services:
     image: mongo
     container_name: mongo3
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 425269
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
     volumes:
       - ./mongo-keyfile:/etc/mongo-keyfile
