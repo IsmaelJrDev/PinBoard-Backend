@@ -1,2 +1,6 @@
-./mongo-keyfile
 .env
+
+// Archivos de microservicios
+microservicioAuth/node_modules/
+
+node_modules
