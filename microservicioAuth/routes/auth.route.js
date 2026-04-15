@@ -4,6 +4,61 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User.js");
 const { response } = require("express");
 
+// Endpoint de Registro de Usuario
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Registrar un nuevo usuario
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@correo.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 example: MiPassword123
+ *     responses:
+ *       201:
+ *         description: Usuario creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "64b1f2c3e4d5a6b7c8d9e0f1"
+ *                 email:
+ *                   type: string
+ *                   example: usuario@correo.com
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Error en la solicitud (datos inválidos o email duplicado)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Usuario no encontrado, User not found"
+ */
+
 router.post("/register", async(req, res)=>{
     try{
         // Captura de email y contraseña del cuerpo
@@ -26,6 +81,64 @@ router.post("/register", async(req, res)=>{
     }
 });
 
+// Enpoint de Login
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Iniciar sesión y obtener JWT
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@correo.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: MiPassword123
+ *     responses:
+ *       200:
+ *         description: Autenticación exitosa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: JWT de acceso
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       401:
+ *         description: Credenciales inválidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Credenciales inválidas"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No se pudo procesar la solicitud"
+ */
 router.post("/login", async(req, res)=>{
     try{
         // Captura de email y contraseña del cuerpo
@@ -33,7 +146,7 @@ router.post("/login", async(req, res)=>{
         // Buscamos si el usuario existe
         const user = await User.findOne({where: {email}});
         // Si no se ecnuentra el usuario
-        if (!user) return res.status(400).json({
+        if (!user) return res.status(401).json({
             message: "Usuario no encontrado, User not found"
         });
         // Comparar contraseñas
