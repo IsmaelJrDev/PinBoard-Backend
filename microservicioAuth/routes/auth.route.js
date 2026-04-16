@@ -18,9 +18,13 @@ const { response } = require("express");
  *           schema:
  *             type: object
  *             required:
+ *               - name
  *               - email
  *               - password
  *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Juan
  *               email:
  *                 type: string
  *                 format: email
@@ -41,6 +45,9 @@ const { response } = require("express");
  *                 id:
  *                   type: string
  *                   example: "64b1f2c3e4d5a6b7c8d9e0f1"
+ *                 name:
+ *                   type: string
+ *                   example: name user
  *                 email:
  *                   type: string
  *                   example: usuario@correo.com
@@ -62,11 +69,12 @@ const { response } = require("express");
 router.post("/register", async(req, res)=>{
     try{
         // Captura de email y contraseña del cuerpo
-        const {email, password} = req.body;
+        const {name, email, password} = req.body;
         // Hasheo de paswword
         const passhash = await bcrypt.hash(password, 12);
         // Crea el usuario usando el modelo creado
         const user = await User.create({
+            name,
             email,
             password: passhash
         })
@@ -155,7 +163,7 @@ router.post("/login", async(req, res)=>{
         if(!valid) return res.status(401).json({
             message: "Usuario o contraseña incorrecto"
         })
-        // Generacion del token si todo marcha bien+
+        // Generacion del token si todo marcha bien
         const token = jwt.sign(
             {id:user.id, email:user.email},
             process.env.JWT_SECRET,
