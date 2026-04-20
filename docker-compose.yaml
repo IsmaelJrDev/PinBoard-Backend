@@ -1,6 +1,5 @@
 services:
-  # ---- PRIMEROS TRES CONTENEDORES DE MONGO EN EL PRIMER REPLICA SET (ARCHIVO KEYFILE_1) ----
-  # PRIMER SERVICIO DE MONGO
+ # ---- PRIMEROS TRES CONTENEDORES DE MONGO EN EL PRIMER REPLICA SET (ARCHIVO KEYFILE_1) ----
   database1:
     image: postgres:17
     container_name: database1
@@ -11,37 +10,51 @@ services:
       - ./postgres_data_1:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-#  # SEGUNDO SERVICIO DE MONGO
-#  mongo2:
-#    image: mongo
-#    container_name: mongo2
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-#      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-#    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
-#    volumes:
-#      - ./mongo-keyfile:/etc/mongo-keyfile
-#      - ./mongo_2:/data/db
-#    ports:
-#      - "27018:27017"
-#
-#  # TERCER SERVICIO DE MONGO
-#  mongo3:
-#    image: mongo
-#    container_name: mongo3
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-#      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-#    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
-#    volumes:
-#      - ./mongo-keyfile:/etc/mongo-keyfile
-#      - ./mongo_3:/data/db
-#    ports:
-#      - "27019:27017"
 
-  # --- MICROSERVICIO 1 Y SU RÉPLICA ---
+  # PRIMER SERVICIO DE MONGO
+  PinBoardMongo1:
+    image: mongo
+    container_name: PinBoardMongo1
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
+    volumes:
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./PinBoardMongo1:/data/db
+    ports:
+      - "27017:27017"
 
-  # Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
+  # SEGUNDO SERVICIO DE MONGO
+  PinBoardMongo2:
+    image: mongo
+    container_name: PinBoardMongo2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
+    volumes:
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./PinBoardMongo2:/data/db
+    ports:
+      - "27018:27017"
+
+  # TERCER SERVICIO DE MONGO
+  PinBoardMongo3:
+    image: mongo
+    container_name: PinBoardMongo3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
+    volumes:
+      - ./mongo-keyfile:/etc/mongo-keyfile
+      - ./PinBoardMongo3:/data/db
+    ports:
+      - "27019:27017"
+
+# --- MICROSERVICIO 1 Y SU RÉPLICA ---
+# Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
   microservicioAuth: &micro1_base
     image: node:18
     container_name: microservicioAuth
@@ -66,27 +79,34 @@ services:
     ports:
       - "3001:3000"
 
-  # --- MICROSERVICIO 2 Y SU RÉPLICA ---
+  # --- MICROSERVICIO 5 Y SU RÉPLICA ---
+  image_service: &img_service_base
+    image: python:3.9-slim
+    container_name: image_service
+    working_dir: /app
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      MONGO_URI: ${MONGO_URI}
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: /app
+    volumes:
+      - ./image_service:/app
+      - image_service_uploads:/app/uploads
+    command: sh -c "pip install --upgrade pip && pip install --no-cache-dir --default-timeout=100 -r requirements.txt && sleep 5&& echo 'Dependencias instaladas. Arrancando servidor...' && gunicorn --bind 0.0.0.0:3000 'app:create_app()'"
+    depends_on:
+      - PinBoardMongo1
+      - PinBoardMongo2
+      - PinBoardMongo3
+    ports:
+      - "3002:3000"
+  # --- RÉPLICA DEL MICROSERVICIO 5 ---
+  image_service_replica:
+    <<: *img_service_base # Copia toda la configuración de arriba
+    container_name: image_service_replica
+    ports:
+      - "3003:3000"
 
-  # Declaración del microservicio 2 tal cual como lo pusimos en nginx.conf
-#  microservicio_2: &micro2_base
-#    image: node:18
-#    container_name: microservicio_2
-#    working_dir: /app
-#    volumes:
-#      - ./microservicio_2:/app
-#    command: sh -c "npm install && npm start"
-#    depends_on:
-#      - mongo1
-#      - mongo2
-#      - mongo3
-#    expose:
-#      - "3000"
-#
-#  # --- RÉPLICA DEL MICROSERVICIO 2 ---
-#  microservicio_2_replica:
-#    <<: *micro2_base # Copia toda la configuración de arriba
-#    container_name: microservicio_2_replica
+
 #
 #  # --- MICROSERVICIO 3 Y SU RÉPLICA ---
 #
@@ -171,3 +191,7 @@ services:
 #      - microservicio_4_replica
 #      - microservicio_5
 #      - microservicio_5_replica
+
+volumes:
+#  postgres_data_1:
+  image_service_uploads:

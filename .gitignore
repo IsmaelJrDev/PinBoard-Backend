@@ -1,6 +1,25 @@
+// Archivo de variables de entorno
 .env
 
 // Archivos de microservicios
 microservicioAuth/node_modules/
 
+// Archivos de microservicio de imagenes
+image_service/__pycache__/
+image_service/uploads/
+image_service_uploads/
+
 node_modules
+
+// Archivo para seguridad de los clusters
+mongo-keyfile
+
+// Archivos de bases de datos
+PinBoardMongo1
+PinBoardMongo2
+PinBoardMongo3
+
+postgres_data_1
+
+// Archivos __pycache__
+__pycache__/
