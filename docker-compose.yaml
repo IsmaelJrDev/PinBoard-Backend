@@ -1,15 +1,15 @@
 services:
-  # ---- PRIMEROS TRES CONTENEDORES DE MONGO EN EL PRIMER REPLICA SET (ARCHIVO KEYFILE_1) ----
-#  database1:
-#    image: postgres:17
-#    container_name: database1
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#    volumes:
-#      - ./postgres_data_1:/var/lib/postgresql/data
-#    ports:
-#      - "5432:5432"
+ # ---- PRIMEROS TRES CONTENEDORES DE MONGO EN EL PRIMER REPLICA SET (ARCHIVO KEYFILE_1) ----
+  database1:
+    image: postgres:17
+    container_name: database1
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres_data_1:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   # PRIMER SERVICIO DE MONGO
   PinBoardMongo1:
@@ -53,33 +53,32 @@ services:
     ports:
       - "27019:27017"
 
-  # --- MICROSERVICIO 1 Y SU RÉPLICA ---
+# --- MICROSERVICIO 1 Y SU RÉPLICA ---
+# Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
+  microservicioAuth: &micro1_base
+    image: node:18
+    container_name: microservicioAuth
+    working_dir: /app
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      URL_CONNECT_P1: ${URL_CONNECT_P1}
+    volumes:
+      - ./microservicioAuth:/app
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - database1
+    #expose:
+    #  - "3000"
+    ports:
+      - "3000:3000"
+  # --- RÉPLICA DEL MICROSERVICIO 1 ---
+  microservicioAuth_replica:
+    <<: *micro1_base # Copia toda la configuración de arriba
+    container_name: microservicioAuth_replica
+    ports:
+      - "3001:3000"
 
-  # Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
-#  microservicioAuth: &micro1_base
-#    image: node:18
-#    container_name: microservicioAuth
-#    working_dir: /app
-#    environment:
-#      JWT_SECRET: ${JWT_SECRET}
-#      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-#      URL_CONNECT_P1: ${URL_CONNECT_P1}
-#    volumes:
-#      - ./microservicioAuth:/app
-#    command: sh -c "npm install && npm start"
-#    depends_on:
-#      - database1
-#    #expose:
-#    #  - "3000"
-#    ports:
-#      - "3000:3000"
-#  # --- RÉPLICA DEL MICROSERVICIO 1 ---
-#  microservicioAuth_replica:
-#    <<: *micro1_base # Copia toda la configuración de arriba
-#    container_name: microservicioAuth_replica
-#    ports:
-#      - "3001:3000"
-#
   # --- MICROSERVICIO 5 Y SU RÉPLICA ---
   image_service: &img_service_base
     image: python:3.9-slim

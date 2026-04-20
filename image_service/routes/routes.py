@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, request, jsonify, g, send_from_directory
 from middleware.auth import token_required
-from services import process_and_save_image, get_image_metadata_by_id, delete_image_by_id
+from services import process_and_save_image, get_image_metadata_by_id, delete_image_by_id, update_image
 from config.config import Config
 
 api = Blueprint('api', __name__)
@@ -76,3 +76,21 @@ def get_uploaded_file(filename):
         return send_from_directory(Config.UPLOAD_FOLDER, filename)
     except FileNotFoundError:
         return jsonify({'message': 'Archivo no encontrado.'}), 404
+    
+@api.route('/images/<string:image_id>', methods=['PUT'])
+@token_required
+def update_image_route(image_id):
+    if 'image' not in request.files:
+        return jsonify({'message': 'No se proporcionó nueva imagen.'}), 400
+    
+    user_id = g.current_user['id']
+    file = request.files['image']
+    
+    metadata, error = update_image(image_id, user_id, file)
+    
+    if error == "not_found":
+        return jsonify({'message': 'Imagen no encontrada o sin permiso.'}), 404
+    if error:
+        return jsonify({'message': error}), 400
+        
+    return jsonify(metadata), 200

@@ -106,10 +106,40 @@ def delete_image_by_id(image_id, user_id):
             return False, "not_found"  # La imagen no existe en absoluto.
 
     # Si la eliminación fue exitosa, procedemos a borrar el archivo físico.
-    try:
-        os.remove(os.path.join(Config.UPLOAD_FOLDER, metadata['filename']))
-    except (FileNotFoundError, KeyError):
-        # El archivo ya no existe o el metadata no tiene 'filename', no es un error crítico.
-        pass
+    filename = metadata.get('filename')
+    if filename:
+        filepath = os.path.join(Config.UPLOAD_FOLDER, filename)
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except OSError as e:
+                print(f"Error borrando archivo físico: {e}")
 
     return True, "Imagen eliminada correctamente."
+
+def update_image(image_id, user_id, new_file):
+    """Reemplaza una imagen existente por una nueva."""
+    # 1. Buscar metadatos actuales
+    old_metadata = images_collection.find_one({"image_id": image_id, "uploaded_by": user_id})
+    if not old_metadata:
+        return None, "not_found"
+
+    # 2. Borrar archivo físico anterior
+    old_path = os.path.join(Config.UPLOAD_FOLDER, old_metadata['filename'])
+    if os.path.exists(old_path):
+        os.remove(old_path)
+
+    # 3. Procesar nueva imagen (reutilizamos tu lógica de guardado)
+    # Nota: podrías refactorizar process_and_save para separar el guardado del insert
+    new_metadata, error = process_and_save_image(new_file, user_id)
+    
+    if error:
+        return None, error
+
+    # 4. Actualizar en Mongo (manteniendo el mismo image_id)
+    images_collection.update_one(
+        {"image_id": image_id},
+        {"$set": new_metadata}
+    )
+    
+    return new_metadata, None
