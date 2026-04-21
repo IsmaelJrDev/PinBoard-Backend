@@ -23,3 +23,6 @@ postgres_data_1
 
 // Archivos __pycache__
 __pycache__/
+
+// Archivos de inicializaion de cluster de Posgresql
+scripts
