@@ -18,7 +18,7 @@ def create_app():
             "version": "1.0.0"
         },
         # "host" se omite para que sea dinámico y funcione en cualquier entorno.
-        "basePath": "/api",
+        "basePath": "/",
         "schemes": [
             "http",
             "https"
@@ -36,7 +36,7 @@ def create_app():
     # Inicializar Swagger
     Swagger(app, template=template)
 
-    app.register_blueprint(api, url_prefix='/api')
+    app.register_blueprint(api, url_prefix='/')
 
     return app
 

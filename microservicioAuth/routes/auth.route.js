@@ -83,9 +83,14 @@ router.post("/register", async(req, res)=>{
 
     }catch(error){
 
-        res.status(400).json({
-            message: "Usuario no encontrado, User not found"
-        })
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({
+                error: "El correo ya tiene una cuenta registrada",
+            });
+        }
+
+        console.error("Error inesperado:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
