@@ -237,23 +237,18 @@ services:
 #    <<: *micro5_base # Copia toda la configuración de arriba
 #    container_name: microservicio_5_replica
 #  # --- CONFIGURACIÓN DEL API GATEWAY ---
-#  nginx:
-#    image: nginx
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-#    depends_on:
-#      - microservicio_1
-#      - microservicio_1_replica
-#      - microservicio_2
-#      - microservicio_2_replica
-#      - microservicio_3
-#      - microservicio_3_replica
-#      - microservicio_4
-#      - microservicio_4_replica
-#      - microservicio_5
-#      - microservicio_5_replica
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - microservicioAuth
+      - microservicioAuth_replica
+      - image_service
+      - image_service_replica
+
 
 volumes:
 # postgres_data_1:
