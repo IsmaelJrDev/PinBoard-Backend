@@ -82,7 +82,7 @@ app.use("/users", rutasUsuario);
  *       '200':
  *         description: El servidor está funcionando correctamente.
  */
-app.get("/", (req, res) => res.json({message: "Servidor Funcional"}));
+app.get("/", (req, res) => res.json({ message: "Servidor Funcional" }));
 
 
 // Conexion a la base de datos
@@ -91,8 +91,12 @@ const startServer = async () => {
         await sequelize.authenticate();
         console.log("Conexión física con Postgres exitosa.");
 
-        await sequelize.sync({ force: false });
-        console.log("Tablas sincronizadas correctamente.");
+        if (process.env.IS_REPLICA !== true) {
+            await sequelize.sync({ force: false });
+            console.log("Tablas sincronizadas correctamente.");
+        } else {
+            console.log("Omitiendo sincronización de tablas")
+        }
 
         app.listen(3000, "0.0.0.0", () => {
             console.log("Servidor corriendo");
