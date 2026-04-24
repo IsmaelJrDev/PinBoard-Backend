@@ -17,7 +17,7 @@ app.use(express.json()); // Reemplaza a body-parser
 app.use('/profiles', profileRoutes);
 
 // Sincronización de BD y arranque del servidor
-const PORT = process.env.PORT || 3004;
+const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
     try {
