@@ -56,4 +56,14 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 
 # other directories & files
-./mongo-keyfile
+mongo-keyfile
+
+// Archivos de bases de datos
+PinBoardMongo1
+PinBoardMongo2
+PinBoardMongo3
+
+postgres_data
+scripts
+image_service/
+microservicioAuth/
