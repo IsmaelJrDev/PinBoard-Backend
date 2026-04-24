@@ -17,19 +17,16 @@ app.use(express.json()); // Reemplaza a body-parser
 app.use('/profiles', profileRoutes);
 
 // Sincronización de BD y arranque del servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3004;
 
 const startServer = async () => {
     try {
         await sequelize.authenticate();
         console.log('✅ Connection to the database has been established successfully.');
 
-        // sync({ alter: true }) ajusta las tablas sin borrarlas. 
-        // En producción, es mejor quitar esto y usar migraciones de Sequelize.
-        if (process.env.NODE_ENV === 'development') {
-            await sequelize.sync({ alter: true });
-            console.log('🔄 Database synchronized.');
-        }
+        // Sincroniza los modelos con la base de datos, alterando las tablas para que coincidan.
+        await sequelize.sync({ alter: true });
+        console.log('🔄 Database synchronized.');
 
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Profile Service running on http://localhost:${PORT}`);
