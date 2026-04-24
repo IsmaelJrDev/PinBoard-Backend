@@ -1,28 +1,76 @@
-// Archivo de variables de entorno
+# Archivos de variables de entorno
 .env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
-// Archivos de microservicios
+# Dependencias de microservicios
+node_modules/
+/node_modules
 microservicioAuth/node_modules/
+profile_service/node_modules/
 
-// Archivos de microservicio de imagenes
+# Archivos de microservicio de imagenes
 image_service/__pycache__/
 image_service/uploads/
 image_service_uploads/
+__pycache__/
 
-node_modules
-
-// Archivo para seguridad de los clusters
+# Archivo para seguridad de los clusters
 mongo-keyfile
 
-// Archivos de bases de datos
+# Archivos de bases de datos locales
 PinBoardMongo1
 PinBoardMongo2
 PinBoardMongo3
-
 postgres_data_1
 
-// Archivos __pycache__
-__pycache__/
-
-// Archivos de inicializaion de cluster de Posgresql
+# Archivos de inicializacion de cluster de Postgresql
 scripts
+
+# Compiled output
+/dist
+/build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Temp directory
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
