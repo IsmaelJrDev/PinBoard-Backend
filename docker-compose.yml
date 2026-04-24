@@ -1,6 +1,6 @@
 services:
-# ---- CONTENEDORES DE POSTGRES CON PRIMER REPLICA SET ----
-# __________________________________________________________________________________________________
+  # ---- CONTENEDORES DE POSTGRES CON PRIMER REPLICA SET ----
+  # __________________________________________________________________________________________________
   postgres_1:
     image: postgres:16
     container_name: postgres_1
@@ -59,8 +59,8 @@ services:
     depends_on:
       - postgres_1
 
-# __________________________________________________________________________________________________
-# ---- CONTENEDORES DE MONGO CON PRIMER REPLICA SET (Archivo Key File)----
+  # __________________________________________________________________________________________________
+  # ---- CONTENEDORES DE MONGO CON PRIMER REPLICA SET (Archivo Key File)----
   # PRIMER SERVICIO DE MONGO
   PinBoardMongo1:
     image: mongo:6.0
@@ -103,9 +103,9 @@ services:
     ports:
       - "27019:27017"
 
-# __________________________________________________________________________________________________
-# --- MICROSERVICIO 1 Y SU RÉPLICA ---
-# Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
+  # __________________________________________________________________________________________________
+  # --- MICROSERVICIO 1 Y SU RÉPLICA ---
+  # Declaración del microservicio 1 tal cual como lo pusimos en nginx.conf
   microservicioAuth: &micro1_base
     image: node:18
     container_name: microservicioAuth
@@ -136,7 +136,7 @@ services:
       IS_REPLICA: "true"
     ports:
       - "3001:3000"
-  
+
   # __________________________________________________________________________________________________
   # --- MICROSERVICIO 2 Y SU REPLICA ---
   profile_service: &profile_service_base
@@ -148,7 +148,7 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       URL_CONNECT: ${URL_CONNECT}
     volumes:
-      - ./profile-service:/app:z
+      - ./profile_service:/app:z
     command: sh -c "npm install && npm run start"
     ports:
       - "3004:3000"
@@ -168,7 +168,7 @@ services:
     ports:
       - "3005:3000"
 
-# __________________________________________________________________________________________________
+  # __________________________________________________________________________________________________
   # --- MICROSERVICIO 5 Y SU RÉPLICA ---
   image_service: &img_service_base
     image: python:3.9-slim
@@ -182,7 +182,10 @@ services:
     volumes:
       - ./image_service:/app:z
       - image_service_uploads:/app/uploads:z
-    command: sh -c "pip install --upgrade pip && pip install --no-cache-dir --default-timeout=100 -r requirements.txt && sleep 5&& echo 'Dependencias instaladas. Arrancando servidor...' && gunicorn --bind 0.0.0.0:3000 'app:create_app()'"
+    command: sh -c "pip install --upgrade pip && pip install --no-cache-dir
+      --default-timeout=100 -r requirements.txt && sleep 5&& echo 'Dependencias
+      instaladas. Arrancando servidor...' && gunicorn --bind 0.0.0.0:3000
+      'app:create_app()'"
     depends_on:
       - PinBoardMongo1
       - PinBoardMongo2
@@ -196,7 +199,7 @@ services:
     ports:
       - "3003:3000"
 
-# __________________________________________________________________________________________________
+  # __________________________________________________________________________________________________
   # --- CONFIGURACIÓN DEL API GATEWAY ---
   nginx:
     image: nginx
@@ -209,7 +212,6 @@ services:
       - microservicioAuth_replica
       - image_service
       - image_service_replica
-
 
 volumes:
   image_service_uploads:
