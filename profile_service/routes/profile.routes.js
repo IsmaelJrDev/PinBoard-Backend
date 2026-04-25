@@ -16,7 +16,7 @@ const validate = (req, res, next) => {
 router.get('/health/check', profileController.healthCheck);
 
 router.post('/', [
-    body('user_id').isUUID().withMessage('user_id must be a valid UUID'),
+    body('user_id').isNumeric().withMessage('user_id must be a valid integer').toInt(),
     body('first_name').isString().isLength({ max: 100 }),
     body('username').isString().isLength({ max: 100 }),
     body('avatar_url').optional().isString(),
@@ -25,12 +25,12 @@ router.post('/', [
 ], profileController.createProfile);
 
 router.get('/:user_id', [
-    param('user_id').isUUID().withMessage('Invalid UUID'),
+    param('user_id').isNumeric().withMessage('Invalid User ID').toInt(),
     validate
 ], profileController.getProfile);
 
 router.patch('/:user_id', [
-    param('user_id').isUUID().withMessage('Invalid UUID'),
+    param('user_id').isNumeric().withMessage('Invalid User ID').toInt(),
     body('first_name').optional().isString().isLength({ max: 100 }),
     body('username').optional().isString().isLength({ max: 100 }),
     body('avatar_url').optional().isString(),
@@ -39,7 +39,7 @@ router.patch('/:user_id', [
 ], profileController.updateProfile);
 
 router.delete('/:user_id', [
-    param('user_id').isUUID().withMessage('Invalid UUID'),
+    param('user_id').isNumeric().withMessage('Invalid User ID').toInt(),
     validate
 ], profileController.deleteProfile);
 
