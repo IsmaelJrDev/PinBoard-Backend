@@ -170,6 +170,31 @@ services:
       - "3005:3000"
 
   # __________________________________________________________________________________________________
+  # --- MICROSERVICIO DEL MICROSERVICIO 4 Y SU RÉPLICA ---
+  category_service: &category_service_base
+    image: node:18
+    container_name: category_service
+    working_dir: /app
+    environment:
+      URL_CONNECT: ${URL_CONNECT}
+    volumes:
+      - ./category_service:/app:z
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3006:3000"
+    depends_on:
+      - postgres_1
+
+  category_service_replica:
+    <<: *category_service_base
+    container_name: category_service_replica
+    environment:
+      URL_CONNECT: ${URL_CONNECT}
+      IS_REPLICA: "true"
+    ports:
+      - "3007:3000"
+
+  # __________________________________________________________________________________________________
   # --- MICROSERVICIO 5 Y SU RÉPLICA ---
   image_service: &img_service_base
     image: python:3.9-slim
