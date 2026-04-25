@@ -91,7 +91,7 @@ const startServer = async () => {
         await sequelize.authenticate();
         console.log("Conexión física con Postgres exitosa.");
 
-        if (process.env.IS_REPLICA !== true) {
+        if (process.env.IS_REPLICA !== 'true') {
             await sequelize.sync({ force: false });
             console.log("Tablas sincronizadas correctamente.");
         } else {
