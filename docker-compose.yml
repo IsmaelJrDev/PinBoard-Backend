@@ -168,6 +168,31 @@ services:
       IS_REPLICA: "true"
     ports:
       - "3005:3000"
+  
+  # __________________________________________________________________________________________________
+  # --- MICROSERVICIO DEL MICROSERVICIO 3 Y SU RÉPLICA ---
+  pin_service: &pin_service_base
+    image: node:18
+    container_name: pin_service
+    working_dir: /app
+    environment:
+      URL_CONNECT: ${URL_CONNECT}
+    volumes:
+      - ./pin_service:/app:z
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3008:3000"
+    depends_on:
+      - postgres_1
+
+  pin_service_replica:
+    <<: *pin_service_base
+    container_name: pin_service_replica
+    environment:
+      URL_CONNECT: ${URL_CONNECT}
+      IS_REPLICA: "true"
+    ports:
+      - "3009:3000"
 
   # __________________________________________________________________________________________________
   # --- MICROSERVICIO DEL MICROSERVICIO 4 Y SU RÉPLICA ---
@@ -236,6 +261,12 @@ services:
     depends_on:
       - microservicioAuth
       - microservicioAuth_replica
+      - profile_service
+      - profile_service_replica
+      - pin_service
+      - pin_service_replica
+      - category_service
+      - category_service_replica
       - image_service
       - image_service_replica
 
