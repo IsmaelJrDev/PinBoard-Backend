@@ -25,7 +25,7 @@ const startServer = async () => {
         console.log('✅ Connection to the database has been established successfully.');
 
         // Sincroniza los modelos con la base de datos, alterando las tablas para que coincidan.
-        await sequelize.sync({ alter: true });
+        await sequelize.sync({ force: true });
         console.log('🔄 Database synchronized.');
 
         app.listen(PORT, '0.0.0.0', () => {
