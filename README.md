@@ -133,5 +133,5 @@ Asegúrate de tener instalados en tu sistema local:
 ---
 
 <div align="center">
-  <p>Construido con ❤️ para la materia de Sistemas Distribuidos.</p>
+  <p>Construido para la materia de Sistemas Distribuidos.</p>
 </div>
